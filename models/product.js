@@ -1,6 +1,6 @@
 import mongoose, { model } from "mongoose";
 
-const product =  new mongoose.Schema({
+const productSchema =  new mongoose.Schema({
     productID :{
         type : String,
         required : true,
@@ -49,6 +49,6 @@ const product =  new mongoose.Schema({
     },
 })
 
-const Product = mongoose.model('Product', product);
+const Product = mongoose.model('Product', productSchema);
 
 export default Product;

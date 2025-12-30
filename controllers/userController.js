@@ -55,8 +55,7 @@ export function loginUser(req, res){
     ).then(
         (user) => {
 
-            if(user
-                 == null){
+            if(user == null){
 
                 res.status(404).json({ message: "User Not Found" });
 
@@ -84,6 +83,42 @@ export function loginUser(req, res){
         }
     )
 }
+
+// export async function loginUser(req, res) {
+//     try {
+//         const user = await User.findOne({ email: req.body.email });
+
+//         if (!user) {
+//             return res.status(404).json({ message: "User Not Found" });
+//         }
+
+//         const isPasswordValid = bcrypt.compareSync(
+//             req.body.password,
+//             user.password
+//         );
+
+//         if (!isPasswordValid) {
+//             return res.status(401).json({ message: "Invalid Password" });
+//         }
+
+//         const token = jwt.sign(
+//             {
+//                 email: user.email,
+//                 firstName: user.firstName,
+//                 lastName: user.lastName,
+//                 image: user.image,
+//                 role: user.role,
+//                 isEmailVerified: user.isEmailVerified
+//             },
+//             "i-computers-2002"
+//         );
+
+//         res.status(200).json({ message: "Login Successful", token });
+
+//     } catch (error) {
+//         res.status(500).json({ message: "Server Error" });
+//     }
+// }
 
 export function isAdmin(req){
     if(req.user == null ){

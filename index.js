@@ -23,6 +23,7 @@ const app = express();
 //middleware to parse json data from request body
 app.use(express.json());
 
+//Authentiation Middleware lib FIle eka balanna
 app.use(AuthorizeUser)
 
 app.use('/users', userRouter);
@@ -32,3 +33,4 @@ app.use('/products', productRouter);
 app.listen(3000, 
     () => {console.log('Server is Running On Port 3000')}
 );
+
