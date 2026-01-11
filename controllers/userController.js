@@ -76,7 +76,7 @@ export function loginUser(req, res){
                             image: user.image,
                             role: user.role,
                             isEmailVerified: user.isEmailVerified
-                        }, process.env.JWT_SECRET)
+                        }, process.env.JWT_SECRET, {expiresIn: req.body.rememberMe ? '30d' : '48h'});
 
                     res.status(200).json({ message: "Login Successful", token: token, role: user.role });
                 }else{
