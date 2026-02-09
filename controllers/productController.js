@@ -130,7 +130,7 @@ export async function getProductsById(req, res) {
                 return;
             }
         }
-        res.status(200).json({ product });
+        res.status(200).json( product );
 
     } catch (error) {
         res.status(500).json({ message: "Error Fetching Product", error: error });
