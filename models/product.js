@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const proudctSchema = new mongoose.Schema(
+const productSchema = new mongoose.Schema(
     {
-        productID : {
+        productId : {
             type : String,
             required : true,
             unique : true
@@ -54,7 +54,8 @@ const proudctSchema = new mongoose.Schema(
     }
 )
 
-const Product = mongoose.model("Product",proudctSchema)
+const Product = mongoose.model("Product",productSchema)
 
 export default Product;
+
 

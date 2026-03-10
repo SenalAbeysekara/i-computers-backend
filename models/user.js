@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
+
     email : {
         type : String,
         required : true,
@@ -25,26 +26,30 @@ const userSchema = new mongoose.Schema({
     role : {
         type : String,
         required : true,
-        enum : ["admin", "customer"],
+        enum : ["admin","customer"],
         default : "customer"
     },
 
-    isblocked : {
+    isBlocked : {
         type : Boolean,
-        default : false
+        default : false,
+        required : true       
     },
 
     isEmailVerified : {
         type : Boolean,
-        default : false
+        default : false,
+        required : true
     },
 
-    image :  {
+    image : {
         type : String,
-        default : "/images/default.jpg"
-    },
-});
+        default : "/images/default-profile.png",
+        required : true
+    }
 
-const User = mongoose.model('User', userSchema);
+})
+
+const User = mongoose.model("User",userSchema)
 
 export default User;

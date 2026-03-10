@@ -76,27 +76,27 @@ export async function createOrder(req, res) {
 
             const item = req.body.items[i]
 
-            const product = await Product.findOne({ productID : item.productID })
+            const product = await Product.findOne({ productId : item.productId })
 
             if(product == null){
 
-                res.status(404).json({ message : "Product with id " + item.productID + " not found. Please remove it from your cart and try again." })
+                res.status(404).json({ message : "Product with id " + item.productId + " not found. Please remove it from your cart and try again." })
                 return
             }
 
             if(product.isVisible == false){
-                res.status(404).json({ message : "Product with id " + item.productID + " is not available. Please remove it from your cart and try again." })
+                res.status(404).json({ message : "Product with id " + item.productId + " is not available. Please remove it from your cart and try again." })
                 return
             }
 
             // if(product.qty < item.qty){
 
-            //     res.status(404).json({ message : "Only " + product.qty + " items available for product with id " + item.productID + ". Please adjust the quantity in your cart and try again." })
+            //     res.status(404).json({ message : "Only " + product.qty + " items available for product with id " + item.productId + ". Please adjust the quantity in your cart and try again." })
             //     return
             // }
 
             orderData.items.push({
-                productId : product.productID,
+                productId : product.productId,
                 name : product.name,
                 price : product.price,
                 labelledPrice : product.labelledPrice,
@@ -114,7 +114,7 @@ export async function createOrder(req, res) {
         // for(let i = 0; i< orderData.items.length; i++){
 
         //     const item = orderData.items[i]
-        //     await Product.updateOne({ productID : item.productID }, { $inc : { qty : -item.qty } })
+        //     await Product.updateOne({ productId : item.productId }, { $inc : { qty : -item.qty } })
         // }
 
         res.status(201).json({ message: "Order created successfully", orderId : orderData.orderId });

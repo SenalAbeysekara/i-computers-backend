@@ -9,18 +9,18 @@ export async function createProduct(req, res) {
 
 	try {
 		const existingProduct = await Product.findOne({
-			productID: req.body.productID,
+			productId: req.body.productId,
 		});
 
 		if (existingProduct) {
 			res
 				.status(400)
-				.json({ message: "Product with given productID already exists" });
+				.json({ message: "Product with given productId already exists" });
 			return;
 		}
 
 		const data = {};
-		data.productID = req.body.productID;
+		data.productId = req.body.productId;
 
 		if (req.body.name == null) {
 			res.status(400).json({ message: "Product name is required" });
@@ -78,9 +78,9 @@ export async function deleteProduct(req, res) {
 		return;
 	}
 	try {
-		const productID = req.params.productID;
+		const productId = req.params.productId;
 
-		await Product.deleteOne({ productID: productID });
+		await Product.deleteOne({ productId: productId });
 
 		res.status(200).json({ message: "Product deleted successfully" });
 	} catch (error) {
@@ -95,7 +95,7 @@ export async function updateProduct(req, res) {
 	}
 
 	try {
-		const productID = req.params.productID;
+		const productId = req.params.productId;
 
 		const data = {};
 		
@@ -125,7 +125,7 @@ export async function updateProduct(req, res) {
 
 
 
-		await Product.updateOne({ productID: productID },data);
+		await Product.updateOne({ productId: productId },data);
 
 		res
 			.status(201)
@@ -135,12 +135,12 @@ export async function updateProduct(req, res) {
 	}
 }
 
-export async function getProductsById(req , res){
+export async function getProductById(req , res){
 	console.log("Get product by id api called")
     try{
 
-        const productID = req.params.productID;
-        const product = await Product.findOne({productID: productID});
+        const productId = req.params.productId;
+        const product = await Product.findOne({productId: productId});
 
         if(product == null){
             res.status(404).json({message : "Product not found"});
