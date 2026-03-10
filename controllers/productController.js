@@ -2,140 +2,163 @@ import Product from "../models/product.js";
 import { isAdmin } from "./userController.js";
 
 export async function createProduct(req, res) {
+	if (!isAdmin(req)) {
+		res.status(403).json({ message: "Access denied. Admins only." });
+		return;
+	}
 
-    if (!isAdmin(req)) {
-        return res.status(403).json({ message: "Access Denied, Admin Only." });
-        return;
-    }
+	try {
+		const existingProduct = await Product.findOne({
+			productID: req.body.productID,
+		});
 
-    try {
-        const existingProduct = await Product.findOne({ productID: req.body.productID });
+		if (existingProduct) {
+			res
+				.status(400)
+				.json({ message: "Product with given productID already exists" });
+			return;
+		}
 
-        if (existingProduct) {
-            res.status(400).json({ message: "Product with given Product ID already exsists." });
-            return;
-        }
+		const data = {};
+		data.productID = req.body.productID;
 
-        const data = {}
-        data.productID = req.body.productID;
+		if (req.body.name == null) {
+			res.status(400).json({ message: "Product name is required" });
+			return;
+		}
+		data.name = req.body.name;
+		data.description = req.body.description || "";
+		data.altNames = req.body.altNames || [];
 
-        if (req.body.name == null) {
-            res.status(400).json({ message: "Product Name is required." })
-            return;
-        }
-        data.name = req.body.name;
-        data.description = req.body.description || "";
-        data.altNames = req.body.altNames || [];
+		if (req.body.price == null) {
+			res.status(400).json({ message: "Product price is required" });
+			return;
+		}
+		data.price = req.body.price;
+		data.labelledPrice = req.body.labelledPrice || req.body.price;
+		data.category = req.body.category || "Others";
+		data.images = req.body.images || [
+			"/images/default-product-1.png",
+			"/images/default-product-2.png",
+		];
+		data.isVisible = req.body.isVisible;
+		data.brand = req.body.brand || "Generic";
+		data.model = req.body.model || "Standard";
 
-        if (req.body.price == null) {
-            res.status(400).json({ message: "Product Price is required." })
-            return;
-        }
-        data.price = req.body.price;
-        data.labelledPrice = req.body.labelledPrice || req.body.price;
-        data.category = req.body.category || "others";
-        data.images = req.body.images || ["/images/default.jpg"];
-        data.isVisible = req.body.isVisible;
-        data.brand = req.body.brand || "generic";
-        data.model = req.body.model || "standard";
+		const newProduct = new Product(data);
 
-        const product = new Product(data);
+		await newProduct.save();
 
-        await product.save();
-        res.status(200).json({ message: "Product Created Successfully" });
-
-    } catch (error) {
-        res.status(500).json({ message: "Error Creating Product", error: error });
-    }
+		res
+			.status(201)
+			.json({ message: "Product created successfully", product: newProduct });
+	} catch (error) {
+		res.status(500).json({ message: "Error creating product", error: error });
+	}
 }
 
 export async function getProducts(req, res) {
-    try {
-        if (isAdmin(req)) {
-            const products = await Product.find({});
-            return res.status(200).json(products);
-        } else {
-            const products = await Product.find({ isVisible: true });
-            return res.status(200).json(products);
-        }
-    } catch (error) {
-        return res.status(500).json({ message: "Error Fetching Products", error });
-    }
+	console.log("Get products api called")
+	try {
+		if (isAdmin(req)) {
+			const products = await Product.find();
+			res.status(200).json(products);
+		} else {
+			const products = await Product.find({ isVisible: true });
+			res.status(200).json(products);
+		}
+	} catch (error) {
+		res.status(500).json({ message: "Error fetching products", error: error });
+	}
 }
 
 export async function deleteProduct(req, res) {
+	if (!isAdmin(req)) {
+		res.status(403).json({ message: "Access denied. Admins only." });
+		return;
+	}
+	try {
+		const productID = req.params.productID;
 
-    if (!isAdmin(req)) {
-        return res.status(403).json({ message: "Access Denied, Admin Only." });
-    }
+		await Product.deleteOne({ productID: productID });
 
-    try {
-        const productID = req.params.productID;
-        await Product.deleteOne({ productID: productID });
-        res.status(200).json({ message: "Product Deleted Successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error Deleting Product", error: error });
-    }
+		res.status(200).json({ message: "Product deleted successfully" });
+	} catch (error) {
+		res.status(500).json({ message: "Error deleting product", error: error });
+	}
 }
 
 export async function updateProduct(req, res) {
-    if (!isAdmin(req)) {
-        return res.status(403).json({ message: "Access Denied, Admin Only." });
-    }
-    try {
-        const productID = req.params.productID;
+	if (!isAdmin(req)) {
+		res.status(403).json({ message: "Access denied. Admins only." });
+		return;
+	}
 
-        const data = {}
+	try {
+		const productID = req.params.productID;
 
-        if (req.body.name == null) {
-            res.status(400).json({ message: "Product Name is required." })
-            return;
-        }
-        data.name = req.body.name;
-        data.description = req.body.description || "";
-        data.altNames = req.body.altNames || [];
+		const data = {};
+		
 
-        if (req.body.price == null) {
-            res.status(400).json({ message: "Product Price is required." })
-            return;
-        }
-        data.price = req.body.price;
-        data.labelledPrice = req.body.labelledPrice || req.body.price;
-        data.category = req.body.category || "others";
-        data.images = req.body.images || ["/images/default.jpg"];
-        data.isVisible = req.body.isVisible;
-        data.brand = req.body.brand || "generic";
-        data.model = req.body.model || "standard";
+		if (req.body.name == null) {
+			res.status(400).json({ message: "Product name is required" });
+			return;
+		}
+		data.name = req.body.name;
+		data.description = req.body.description || "";
+		data.altNames = req.body.altNames || [];
 
-        await Product.updateOne({ productID: productID }, data);
-        res.status(200).json({ message: "Product Updated Successfully" });
+		if (req.body.price == null) {
+			res.status(400).json({ message: "Product price is required" });
+			return;
+		}
+		data.price = req.body.price;
+		data.labelledPrice = req.body.labelledPrice || req.body.price;
+		data.category = req.body.category || "Others";
+		data.images = req.body.images || [
+			"/images/default-product-1.png",
+			"/images/default-product-2.png",
+		];
+		data.isVisible = req.body.isVisible;
+		data.brand = req.body.brand || "Generic";
+		data.model = req.body.model || "Standard";
 
-    } catch (error) {
-        res.status(500).json({ message: "Error Updating Product", error: error });
-    }
+
+
+		await Product.updateOne({ productID: productID },data);
+
+		res
+			.status(201)
+			.json({ message: "Product updated successfully" });
+	} catch (error) {
+		res.status(500).json({ message: "Error updating product", error: error });
+	}
 }
 
-export async function getProductsById(req, res) {
-    try {
+export async function getProductsById(req , res){
+	console.log("Get product by id api called")
+    try{
+
         const productID = req.params.productID;
-        const product = await Product.findOne({ productID: productID });
-        if (product == null) {
-            res.status(404).json({ message: "Product Not Found" });
+        const product = await Product.findOne({productID: productID});
+
+        if(product == null){
+            res.status(404).json({message : "Product not found"});
             return;
         }
 
-        if (!product.isVisible) {
-            if (!isAdmin(req)) {
-                res.status(403).json({ message: "Product Not Found" });
+        if(!product.isVisible){
+            if(!isAdmin(req)){
+                res.status(404).json({message : "Product not found."});
                 return;
             }
         }
-        res.status(200).json( product );
+        res.status(200).json(product);
 
-    } catch (error) {
-        res.status(500).json({ message: "Error Fetching Product", error: error });
+    }catch(error){
+        res.status(500).json({message : "Error fetching product" , error : error});
     }
 }
 
-export async function seachProducts(req, res) {
+export async function searchProducts(req , res){
 }

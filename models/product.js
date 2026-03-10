@@ -1,54 +1,60 @@
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 
-const productSchema =  new mongoose.Schema({
-    productID :{
-        type : String,
-        required : true,
-        unique : true
-    },
-    name : {
-        type : String,
-        required : true
-    },
-    description : {
-        type : String,
-        required : true
-    },
-    altNames : {
-        type : [String],
-        default : []
-    },
-    price : {
-        type : Number,
-        required : true
-    },
-    labelledPrice : {
-        type : Number,
-        required : true
-    },
-    category : {
-        type : String,
-        default : "others"
-    },
-    images : {
-        type : [String],
-        default : ["/images/default.jpg"]
-    },
-    isVisible : {
-        type : Boolean,
-        default : true,
-        required : true
-    },
-    brand : {
-        type : String,
-        default : "generic"
-    },
-    model : {
-        type : String,
-        default : "standard"
-    },
-})
+const proudctSchema = new mongoose.Schema(
+    {
+        productID : {
+            type : String,
+            required : true,
+            unique : true
+        },
+        name : {
+            type : String,
+            required : true
+        },
+        description : {
+            type : String,
+            required : true
+        },
+        altNames : {
+            type : [String],
+            default : []
+        },
+        price : {
+            type : Number,
+            required : true
+        },
+        labelledPrice : {
+            type : Number,
+        },
+        category : {
+            type : String,
+            default : "Others"
+        },
+        images : {
+            type : [String],
+            default : ["/images/default-product-1.png","/images/default-product-2.png"]
+        },
+        isVisible : {
+            type : Boolean,
+            default : true,
+            required : true
+        },
+        brand : {
+            type : String,
+            default : "Generic"
+        },
+        model : {
+            type : String,
+            default : "Standard"
+        },
+        qty : {
+            type : Number,
+            default : 100
+        }
+    }
+)
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model("Product",proudctSchema)
 
 export default Product;
+
