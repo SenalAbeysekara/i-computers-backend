@@ -207,8 +207,6 @@ export async function sendOTP(req, res) {
 			return;
 		}
 
-		// Generate and send OTP logic here
-		//otp between 10000 and 99999
 		const otp = Math.floor(10000 + Math.random() * 90000);
 
 		await OTP.deleteMany({ email: req.body.email });
@@ -224,10 +222,7 @@ export async function sendOTP(req, res) {
 			from: "senaldusayantha@gmail.com",
 			to: req.body.email,
 			subject: "Your OTP for password reset",
-			text:
-				"Your OTP for password reset is " +
-				otp +
-				". It is valid for 10 minutes.",
+			text: "Your OTP for password reset is " + otp + ". It is valid for 2 minutes.",
 		};
 
 		transporter.sendMail(message, (error, info) => {
@@ -253,7 +248,17 @@ export async function verifyOTP(req, res) {
 		const otpRecord = await OTP.findOne({ email: email });
 
 		if (otpRecord == null) {
-			res.status(404).json({ message: "OTP not found for the given email" });
+			res.status(404).json({ message: "OTP not found or expired" });
+			return;
+		}
+
+		const now = new Date();
+		const otpAgeInMs = now.getTime() - new Date(otpRecord.createdAt).getTime();
+		const twoMinutesInMs = 2 * 60 * 1000;
+
+		if (otpAgeInMs > twoMinutesInMs) {
+			await OTP.deleteOne({ email: email });
+			res.status(400).json({ message: "OTP has expired" });
 			return;
 		}
 
@@ -265,7 +270,6 @@ export async function verifyOTP(req, res) {
 		const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
 		await User.updateOne({ email: email }, { password: hashedPassword });
-
 		await OTP.deleteOne({ email: email });
 
 		res.json({ message: "Password reset successfully" });
